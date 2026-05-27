@@ -15,7 +15,8 @@ from keyboards.keyboards import (
     number_keyboard,
     activity_keyboard,
     main_menu,
-    gender_keyboard
+    gender_keyboard,
+    water_keyboard
 )
 
 from services.calories import (
@@ -24,7 +25,9 @@ from services.calories import (
 
 from database.database import (
     save_user,
-    get_user
+    get_user,
+    save_water,
+    get_water
 )
 
 
@@ -89,6 +92,72 @@ async def profile(callback: CallbackQuery):
         f"🔥 Норма: {calories} ккал",
 
         reply_markup=main_menu
+    )
+
+    await callback.answer()
+
+@router.callback_query(lambda c: c.data == "water")
+async def water_menu(callback: CallbackQuery):
+
+    user = get_user(
+        callback.from_user.id
+    )
+
+    if not user:
+
+        await callback.message.edit_text(
+            "❌ Сначала рассчитайте калории",
+            reply_markup=main_menu
+        )
+
+        await callback.answer()
+
+        return
+
+    age, height, weight, calories = user
+
+    water_goal = weight * 35
+
+    water_data = get_water(
+        callback.from_user.id
+    )
+
+    if water_data:
+
+        current_water, _ = water_data
+
+    else:
+
+        current_water = 0
+
+        save_water(
+            callback.from_user.id,
+            current_water,
+            water_goal
+        )
+
+    percent = int(
+        (current_water / water_goal) * 100
+    )
+
+    bars = int(percent / 10)
+
+    progress = (
+        "█" * bars +
+        "░" * (10 - bars)
+    )
+
+    await callback.message.edit_text(
+        f"💧 Вода за сегодня\n\n"
+
+        f"{progress} {percent}%\n\n"
+
+        f"🥤 {current_water} / {water_goal} мл\n\n"
+
+        f"🔥 Осталось:\n"
+        f"{water_goal - current_water} мл",
+
+        reply_markup=water_keyboard
     )
 
     await callback.answer()
@@ -311,5 +380,99 @@ async def callbacks(
         )
 
         await state.clear()
+    # WATER
 
+    elif callback.data == "water_add":
+
+        water_data = get_water(
+            callback.from_user.id
+        )
+
+        if not water_data:
+
+            await callback.answer()
+
+            return
+
+        current_water, water_goal = water_data
+
+        current_water += 250
+
+        if current_water > water_goal:
+            current_water = water_goal
+
+        save_water(
+            callback.from_user.id,
+            current_water,
+            water_goal
+        )
+
+        percent = int(
+            (current_water / water_goal) * 100
+        )
+
+        bars = int(percent / 10)
+
+        progress = (
+            "█" * bars +
+            "░" * (10 - bars)
+        )
+
+        await callback.message.edit_text(
+            f"💧 Вода за сегодня\n\n"
+
+            f"{progress} {percent}%\n\n"
+
+            f"🥤 {current_water} / {water_goal} мл\n\n"
+
+            f"🔥 Осталось:\n"
+            f"{water_goal - current_water} мл",
+
+            reply_markup=water_keyboard
+        )
+
+    elif callback.data == "water_refresh":
+
+        water_data = get_water(
+            callback.from_user.id
+        )
+
+        if not water_data:
+
+            await callback.answer()
+
+            return
+
+        current_water, water_goal = water_data
+
+        percent = int(
+            (current_water / water_goal) * 100
+        )
+
+        bars = int(percent / 10)
+
+        progress = (
+            "█" * bars +
+            "░" * (10 - bars)
+        )
+
+        await callback.message.edit_text(
+            f"💧 Вода за сегодня\n\n"
+
+            f"{progress} {percent}%\n\n"
+
+            f"🥤 {current_water} / {water_goal} мл\n\n"
+
+            f"🔥 Осталось:\n"
+            f"{water_goal - current_water} мл",
+
+            reply_markup=water_keyboard
+        )
+
+    elif callback.data == "back_menu":
+
+        await callback.message.edit_text(
+            "🔥 Главное меню",
+            reply_markup=main_menu
+        )
     await callback.answer()

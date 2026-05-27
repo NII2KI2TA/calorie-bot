@@ -26,6 +26,21 @@ CREATE TABLE IF NOT EXISTS users (
 
 connection.commit()
 
+cursor.execute("""
+
+CREATE TABLE IF NOT EXISTS water (
+
+    telegram_id INTEGER PRIMARY KEY,
+
+    current_water INTEGER,
+    water_goal INTEGER
+
+)
+
+""")
+
+connection.commit()
+
 
 def save_user(
     telegram_id,
@@ -71,6 +86,44 @@ def get_user(telegram_id):
     ORDER BY id DESC
 
     LIMIT 1
+
+    """, (telegram_id,))
+
+    return cursor.fetchone()
+def save_water(
+    telegram_id,
+    current,
+    goal
+):
+
+    cursor.execute("""
+
+    INSERT OR REPLACE INTO water (
+        telegram_id,
+        current_water,
+        water_goal
+    )
+
+    VALUES (?, ?, ?)
+
+    """, (
+        telegram_id,
+        current,
+        goal
+    ))
+
+    connection.commit()
+
+
+def get_water(telegram_id):
+
+    cursor.execute("""
+
+    SELECT current_water, water_goal
+
+    FROM water
+
+    WHERE telegram_id = ?
 
     """, (telegram_id,))
 

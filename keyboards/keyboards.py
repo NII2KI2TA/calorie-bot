@@ -73,6 +73,13 @@ main_menu = InlineKeyboardMarkup(
                 text="👤 Профиль",
                 callback_data="profile"
             )
+        ],
+
+        [
+            InlineKeyboardButton(
+                text="💧 Вода",
+                callback_data="water"
+            )
         ]
     ]
 )
@@ -90,6 +97,31 @@ gender_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text="👩 Женщина",
                 callback_data="female"
+            )
+        ]
+    ]
+)
+water_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+
+        [
+            InlineKeyboardButton(
+                text="🥤 +250 мл",
+                callback_data="water_add"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                text="🔄 Обновить",
+                callback_data="water_refresh"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data="back_menu"
             )
         ]
     ]
