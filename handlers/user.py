@@ -272,7 +272,17 @@ async def callbacks(
             callback.data.split("_")[1]
         )
 
-        gender = data["gender"]
+        gender = data.get("gender")
+        if not gender:
+            await callback.message.edit_text(
+                "❌ Ошибка.\n\nНачните заново: /start"
+            )
+
+            await state.clear()
+
+            await callback.answer()
+
+            return
 
         calories = calculate_calories(
             gender,
