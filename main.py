@@ -77,7 +77,11 @@ async def run_bot():
         drop_pending_updates=True
     )
 
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+
+    except Exception as e:
+        print(e)
 
 
 # MAIN
