@@ -76,3 +76,21 @@ main_menu = InlineKeyboardMarkup(
         ]
     ]
 )
+gender_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+
+        [
+            InlineKeyboardButton(
+                text="👨 Мужчина",
+                callback_data="male"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                text="👩 Женщина",
+                callback_data="female"
+            )
+        ]
+    ]
+)

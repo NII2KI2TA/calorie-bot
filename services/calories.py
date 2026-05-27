@@ -1,15 +1,29 @@
 def calculate_calories(
-    age,
-    height,
-    weight,
-    activity
+        gender,
+        weight,
+        height,
+        age,
+        activity
 ):
 
-    bmr = (
-        10 * weight
-        + 6.25 * height
-        - 5 * age
-        + 5
-    )
+    if gender == "male":
 
-    return int(bmr * activity)
+        bmr = (
+            10 * weight
+            + 6.25 * height
+            - 5 * age
+            + 5
+        )
+
+    else:
+
+        bmr = (
+            10 * weight
+            + 6.25 * height
+            - 5 * age
+            - 161
+        )
+
+    calories = bmr * activity
+
+    return int(calories)

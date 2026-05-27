@@ -14,7 +14,8 @@ from states.states import UserForm
 from keyboards.keyboards import (
     number_keyboard,
     activity_keyboard,
-    main_menu
+    main_menu,
+    gender_keyboard
 )
 
 from services.calories import (
@@ -42,11 +43,9 @@ async def start(message: Message):
 
 @router.callback_query(lambda c: c.data == "calculate")
 async def calculate_start(
-    callback: CallbackQuery,
-    state: FSMContext
+        callback: CallbackQuery,
+        state: FSMContext
 ):
-
-    await state.set_state(UserForm.age)
 
     await state.update_data(
         age=20,
@@ -55,12 +54,11 @@ async def calculate_start(
     )
 
     await callback.message.edit_text(
-        "📅 Возраст: 20",
-        reply_markup=number_keyboard("age")
+        "👤 Выберите пол:",
+        reply_markup=gender_keyboard
     )
 
     await callback.answer()
-
 
 @router.callback_query(lambda c: c.data == "profile")
 async def profile(callback: CallbackQuery):
@@ -115,6 +113,38 @@ async def callbacks(
     age = data.get("age", 20)
     height = data.get("height", 170)
     weight = data.get("weight", 70)
+
+    # GENDER
+
+    if callback.data == "male":
+
+        await state.update_data(
+            gender="male"
+        )
+
+        await state.set_state(
+            UserForm.age
+        )
+
+        await callback.message.edit_text(
+            f"📅 Возраст: {age}",
+            reply_markup=number_keyboard("age")
+        )
+
+    elif callback.data == "female":
+
+        await state.update_data(
+            gender="female"
+        )
+
+        await state.set_state(
+            UserForm.age
+        )
+
+        await callback.message.edit_text(
+            f"📅 Возраст: {age}",
+            reply_markup=number_keyboard("age")
+        )
 
     # AGE
 
@@ -242,10 +272,13 @@ async def callbacks(
             callback.data.split("_")[1]
         )
 
+        gender = data["gender"]
+
         calories = calculate_calories(
-            age,
-            height,
+            gender,
             weight,
+            height,
+            age,
             activity
         )
 
