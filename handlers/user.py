@@ -148,7 +148,7 @@ async def callbacks(
 
     # AGE
 
-    if callback.data == "age_plus":
+    elif callback.data == "age_plus":
 
         age += 1
 
