@@ -171,8 +171,11 @@ async def callbacks(
 
     data = await state.get_data()
 
-    if not data:
-
+    if not data and callback.data not in [
+        "water_add",
+        "water_refresh",
+        "back_menu"
+    ]:
         await callback.answer(
             "Введите /start"
         )
