@@ -1,18 +1,9 @@
 import os
 import asyncio
-from threading import Thread
-
-from flask import Flask
 
 from aiogram import Bot, Dispatcher
-
-from aiogram.fsm.storage.memory import (
-    MemoryStorage
-)
-
-from aiogram.client.session.aiohttp import (
-    AiohttpSession
-)
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.client.session.aiohttp import AiohttpSession
 
 from handlers.user import router
 
@@ -35,41 +26,21 @@ bot = Bot(
 )
 
 
-# DISPATCHER
+# STORAGE
 
 storage = MemoryStorage()
+
+
+# DISPATCHER
 
 dp = Dispatcher(storage=storage)
 
 dp.include_router(router)
 
 
-# FLASK
+# START BOT
 
-app = Flask(__name__)
-
-
-@app.route("/")
-def home():
-
-    return "Bot is running!"
-
-
-def run_web():
-
-    port = int(
-        os.environ.get("PORT", 10000)
-    )
-
-    app.run(
-        host="0.0.0.0",
-        port=port
-    )
-
-
-# BOT
-
-async def run_bot():
+async def main():
 
     print("BOT STARTED")
 
@@ -77,21 +48,11 @@ async def run_bot():
         drop_pending_updates=True
     )
 
-    try:
-        await dp.start_polling(bot)
-
-    except Exception as e:
-        print(e)
+    await dp.start_polling(bot)
 
 
 # MAIN
 
 if __name__ == "__main__":
 
-    flask_thread = Thread(
-        target=run_web
-    )
-
-    flask_thread.start()
-
-    asyncio.run(run_bot())
+    asyncio.run(main())
