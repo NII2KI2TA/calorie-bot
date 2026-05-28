@@ -2,7 +2,7 @@ import sqlite3
 
 
 connection = sqlite3.connect(
-    "calories.db"
+    "calories_v2.db"
 )
 
 cursor = connection.cursor()
