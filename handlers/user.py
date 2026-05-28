@@ -1,5 +1,7 @@
 from aiogram import Router
 
+from datetime import datetime
+
 from aiogram.types import (
     Message,
     CallbackQuery
@@ -124,7 +126,20 @@ async def water_menu(callback: CallbackQuery):
 
     if water_data:
 
-        current_water, _ = water_data
+        current_water, _, saved_date = water_data
+
+        today = datetime.now().strftime(
+            "%Y-%m-%d"
+        )
+
+        if saved_date != today:
+            current_water = 0
+
+            save_water(
+                callback.from_user.id,
+                current_water,
+                water_goal
+            )
 
     else:
 
@@ -397,7 +412,7 @@ async def callbacks(
 
             return
 
-        current_water, water_goal = water_data
+        current_water, water_goal, _ = water_data
 
         current_water += 250
 
@@ -446,7 +461,7 @@ async def callbacks(
 
             return
 
-        current_water, water_goal = water_data
+        current_water, water_goal, _ = water_data
 
         percent = int(
             (current_water / water_goal) * 100

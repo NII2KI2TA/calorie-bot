@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS water (
     telegram_id INTEGER PRIMARY KEY,
 
     current_water INTEGER,
-    water_goal INTEGER
+    water_goal INTEGER,
+    date TEXT
 
 )
 
@@ -90,11 +91,38 @@ def get_user(telegram_id):
     """, (telegram_id,))
 
     return cursor.fetchone()
+from datetime import datetime
+
+
 def save_water(
     telegram_id,
     current,
     goal
 ):
+
+    today = datetime.now().strftime(
+        "%Y-%m-%d"
+    )
+
+    cursor.execute("""
+
+    INSERT OR REPLACE INTO water (
+        telegram_id,
+        current_water,
+        water_goal,
+        date
+    )
+
+    VALUES (?, ?, ?, ?)
+
+    """, (
+        telegram_id,
+        current,
+        goal,
+        today
+    ))
+
+    connection.commit()
 
     cursor.execute("""
 
@@ -119,7 +147,7 @@ def get_water(telegram_id):
 
     cursor.execute("""
 
-    SELECT current_water, water_goal
+    SELECT current_water, water_goal, date
 
     FROM water
 
