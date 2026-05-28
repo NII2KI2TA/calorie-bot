@@ -124,24 +124,6 @@ def save_water(
 
     connection.commit()
 
-    cursor.execute("""
-
-    INSERT OR REPLACE INTO water (
-        telegram_id,
-        current_water,
-        water_goal
-    )
-
-    VALUES (?, ?, ?)
-
-    """, (
-        telegram_id,
-        current,
-        goal
-    ))
-
-    connection.commit()
-
 
 def get_water(telegram_id):
 
