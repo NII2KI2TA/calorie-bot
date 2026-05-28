@@ -402,6 +402,8 @@ async def callbacks(
 
     elif callback.data == "water_add":
 
+        await callback.answer()
+
         water_data = get_water(
             callback.from_user.id
         )
@@ -451,6 +453,8 @@ async def callbacks(
 
     elif callback.data == "water_refresh":
 
+        await callback.answer()
+
         water_data = get_water(
             callback.from_user.id
         )
@@ -493,4 +497,3 @@ async def callbacks(
             "🔥 Главное меню",
             reply_markup=main_menu
         )
-    await callback.answer()
