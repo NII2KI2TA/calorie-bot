@@ -1,63 +1,47 @@
 import os
 import asyncio
 
-from flask import Flask, request
-
-from aiogram import Bot, Dispatcher
+from fastapi import FastAPI, Request
+from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.session.aiohttp import AiohttpSession
-from aiogram import types
 
 from handlers.user import router
 
 TOKEN = os.getenv("BOT_TOKEN")
-BASE_URL = os.getenv("RENDER_URL")  # например https://your-app.onrender.com
+BASE_URL = os.getenv("RENDER_URL")
 
 session = AiohttpSession()
 bot = Bot(token=TOKEN, session=session)
 dp = Dispatcher(storage=MemoryStorage())
 dp.include_router(router)
 
-app = Flask(__name__)
+app = FastAPI()
 
 
-# ---------- WEBHOOK HANDLER ----------
-
-@app.route("/webhook", methods=["POST"])
-def webhook():
-    data = request.get_json()
-
-    update = types.Update(**data)
-
-    asyncio.run(dp.feed_update(bot, update))
-
-    return "ok", 200
-
-
-# ---------- SET WEBHOOK ----------
-
-async def on_start():
-    print("BOT STARTED (WEBHOOK MODE)")
+# ---------- STARTUP ----------
+@app.on_event("startup")
+async def on_startup():
+    print("BOT STARTED (FASTAPI WEBHOOK)")
 
     webhook_url = f"{BASE_URL}/webhook"
-
+    await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(webhook_url)
 
 
-# ---------- ROUTE FOR RENDER ----------
+# ---------- WEBHOOK ----------
+@app.post("/webhook")
+async def webhook(request: Request):
+    data = await request.json()
 
-@app.route("/")
+    update = types.Update(**data)
+
+    await dp.feed_update(bot, update)
+
+    return {"ok": True}
+
+
+# ---------- HEALTH ----------
+@app.get("/")
 def home():
-    return "Bot is running (webhook mode)!"
-
-
-# ---------- MAIN ----------
-
-if __name__ == "__main__":
-
-    # запускаем webhook настройку
-    asyncio.run(on_start())
-
-    # запускаем Flask
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    return "Bot is running (FastAPI + webhook)"
