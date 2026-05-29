@@ -188,7 +188,6 @@ async def callbacks(
 
     if not data and callback.data not in [
         "water_add",
-        "water_refresh",
         "back_menu"
     ]:
         await callback.answer(
@@ -426,46 +425,6 @@ async def callbacks(
             current_water,
             water_goal
         )
-
-        percent = int(
-            (current_water / water_goal) * 100
-        )
-
-        bars = int(percent / 10)
-
-        progress = (
-            "█" * bars +
-            "░" * (10 - bars)
-        )
-
-        await callback.message.edit_text(
-            f"💧 Вода за сегодня\n\n"
-
-            f"{progress} {percent}%\n\n"
-
-            f"🥤 {current_water} / {water_goal} мл\n\n"
-
-            f"🔥 Осталось:\n"
-            f"{water_goal - current_water} мл",
-
-            reply_markup=water_keyboard
-        )
-
-    elif callback.data == "water_refresh":
-
-        await callback.answer()
-
-        water_data = get_water(
-            callback.from_user.id
-        )
-
-        if not water_data:
-
-            await callback.answer()
-
-            return
-
-        current_water, water_goal, _ = water_data
 
         percent = int(
             (current_water / water_goal) * 100

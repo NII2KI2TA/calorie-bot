@@ -110,14 +110,6 @@ water_keyboard = InlineKeyboardMarkup(
                 callback_data="water_add"
             )
         ],
-
-        [
-            InlineKeyboardButton(
-                text="🔄 Обновить",
-                callback_data="water_refresh"
-            )
-        ],
-
         [
             InlineKeyboardButton(
                 text="⬅️ Назад",
