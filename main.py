@@ -52,11 +52,21 @@ async def run_bot():
 
     print("BOT STARTED")
 
-    await bot.delete_webhook(
-        drop_pending_updates=True
-    )
+    try:
+        me = await bot.get_me()
+        print(f"Logged as @{me.username}")
 
-    await dp.start_polling(bot)
+        await bot.delete_webhook(
+            drop_pending_updates=True
+        )
+
+        print("Webhook deleted")
+        print("Start polling")
+
+        await dp.start_polling(bot)
+
+    except Exception as e:
+        print(f"ERROR: {e}")
 
 
 # MAIN
