@@ -24,12 +24,12 @@ app = Flask(__name__)
 # ---------- WEBHOOK HANDLER ----------
 
 @app.route("/webhook", methods=["POST"])
-async def webhook():
-    data = await request.get_json()
+def webhook():
+    data = request.get_json()
 
     update = types.Update(**data)
 
-    await dp.feed_update(bot, update)
+    asyncio.run(dp.feed_update(bot, update))
 
     return "ok", 200
 
